@@ -15,6 +15,11 @@ Elf64_Ehdr KernelHeader;
 Elf64_Phdr *ProgramHeaders;
 BOOLEAN IsDebug = FALSE;
 BootInfo Boot;
+EFI_MEMORY_DESCRIPTOR *MemoryMap = NULL;
+UINTN MemoryMapSize = 0;
+UINTN MapKey;
+UINTN DescriptorSize;
+UINT32 DescriptorVersion;
 
 EFI_STATUS load_kernel(EFI_HANDLE ImageHandle){
     
@@ -337,12 +342,62 @@ EFI_STATUS initialize_boot_info(BootInfo *Boot){
     return EFI_SUCCESS;
 }
 
-EFI_STATUS jump_to_kernel() {
+EFI_STATUS get_memory_map(){
+    Status = uefi_call_wrapper(
+        BS->GetMemoryMap,
+        5,
+        &MemoryMapSize,
+        MemoryMap,
+        &MapKey,
+        &DescriptorSize,
+        &DescriptorVersion
+    );
+
+    MemoryMapSize += 2 * DescriptorSize;
+
+    Status = uefi_call_wrapper(
+        BS->AllocatePool,
+        3,
+        EfiLoaderData,
+        MemoryMapSize,
+        (VOID **)&MemoryMap
+    );
+
+    if (EFI_ERROR(Status))
+        return Status;
+    
+
+    Status = uefi_call_wrapper(
+        BS->GetMemoryMap,
+        5,
+        &MemoryMapSize,
+        MemoryMap,
+        &MapKey,
+        &DescriptorSize,
+        &DescriptorVersion
+    );
+
+    if (EFI_ERROR(Status))
+        return Status;
+    
+    return EFI_SUCCESS;
+}
+
+EFI_STATUS jump_to_kernel(EFI_HANDLE ImageHandle) {
     KernelEntry Entry = (KernelEntry)(UINTN)KernelHeader.e_entry;
+    Status = uefi_call_wrapper(
+        BS->ExitBootServices,
+        2,
+        ImageHandle,
+        MapKey
+    );
+
+    if (EFI_ERROR(Status)){
+        //No prints here since boot service might be gone
+        return Status;
+    }
+
     Entry(&Boot);
-    #if DEBUG
-        Print(L"Kernel Exited, Which should not happend\n");
-    #endif
     return EFI_SUCCESS;
 }
 
@@ -370,8 +425,11 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
     Status = initialize_boot_info(&Boot);
     if(EFI_ERROR(Status)) return Status;
 
+    Status = get_memory_map();
+    if (EFI_ERROR(Status)) return Status;
+
     //now jump to kernel
-    Status = jump_to_kernel();
+    Status = jump_to_kernel(ImageHandle);
     if(EFI_ERROR(Status)) return Status;
     
     return EFI_SUCCESS;
