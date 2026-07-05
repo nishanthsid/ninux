@@ -10,6 +10,7 @@ echo "[1/6] Compiling bootloader..."
 
 gcc \
     -I/usr/include/efi \
+    -Iinclude \
     -I/usr/include/efi/x86_64 \
     -fpic \
     -fshort-wchar \
@@ -60,6 +61,9 @@ echo "[4/6] Building kernel..."
 
 gcc \
     -c \
+    -Iinclude \
+    -I/usr/include/efi \
+    -I/usr/include/efi/x86_64 \
     -ffreestanding \
     -mno-red-zone \
     -Wall \
@@ -67,9 +71,9 @@ gcc \
     -o build/kernel.o
 
 ld \
+    -T kernel/linker.ld \
     -o build/kernel.elf \
-    build/kernel.o \
-    -e kernel_main
+    build/kernel.o
 
 cp build/kernel.elf esp/EFI/BOOT/kernel.elf
 
