@@ -6,12 +6,12 @@
 
 typedef void (*KernelEntry)(BootInfo *);
 
-EFI_STATUS Status;
-EFI_LOADED_IMAGE *LoadedImage;
-EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *FileSystem;
-EFI_FILE_PROTOCOL *Root;
-EFI_FILE_PROTOCOL *KernelFile;
-Elf64_Ehdr KernelHeader;
+EFI_STATUS Status; //The global Status pointer that gets the status for all UEFI operations
+EFI_LOADED_IMAGE *LoadedImage; //This stores the device info from which this program loaded
+EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *FileSystem; //Protocol handle for the filesystem
+EFI_FILE_PROTOCOL *Root; //Protocol handle for the actual root directory of the filesystem
+EFI_FILE_PROTOCOL *KernelFile; //This is the protocol handle for our actual kernel file, its location is hardcoded for now in the load method
+Elf64_Ehdr KernelHeader; 
 Elf64_Phdr *ProgramHeaders;
 BOOLEAN IsDebug = FALSE;
 BootInfo Boot;
@@ -108,7 +108,7 @@ EFI_STATUS read_elf_header(){
         return EFI_LOAD_ERROR;
     }
 
-    #if DEBUG
+    #if KERN_DEBUG
         Print(L"Debug information about the ELF header\n");
         Print(L"Entry: %lx\n", KernelHeader.e_entry);
         Print(L"Program Header Offset: %lx\n", KernelHeader.e_phoff);
@@ -201,7 +201,7 @@ EFI_STATUS read_program_headers(){
         return EFI_LOAD_ERROR;
     }
 
-    #if DEBUG
+    #if KERN_DEBUG
         for(UINTN i = 0; i < KernelHeader.e_phnum;i++){
             Print(L"\nProgram Header %d\n", i);
             Print(L"Type      : %x\n", ProgramHeaders[i].p_type);

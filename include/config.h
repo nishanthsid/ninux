@@ -1,1 +1,1 @@
-#define DEBUG 0
+#define KERN_DEBUG 0

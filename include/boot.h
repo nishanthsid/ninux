@@ -1,14 +1,14 @@
 #ifndef BOOT_H
 #define BOOT_H
 
-#include <efi.h>
+#include <types.h>
 
 typedef struct {
-    VOID   *FramebufferBase;
-    UINTN   FramebufferSize;
-    UINT32  Width;
-    UINT32  Height;
-    UINT32  PixelsPerScanLine;
+    void   *FramebufferBase;
+    uintptr_t   FramebufferSize;
+    uint32_t  Width;
+    uint32_t  Height;
+    uint32_t  PixelsPerScanLine;
 } BootInfo;
 
 #endif

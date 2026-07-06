@@ -1,20 +1,21 @@
 #include <boot.h>
+#include <types.h>
 
 void kernel_main(BootInfo *Boot)
 {
-    UINT32 *fb = (UINT32 *)Boot->FramebufferBase;
+    uint32_t *fb = (uint32_t *)Boot->FramebufferBase;
 
-    UINT32 width  = Boot->Width;
-    UINT32 height = Boot->Height;
+    uint32_t width  = Boot->Width;
+    uint32_t height = Boot->Height;
 
-    UINT32 TILE_SIZE = 64;
+    uint32_t TILE_SIZE = 64;
 
-    UINT32 clr1 = 0;
-    UINT32 clr2 = 255;
-    UINT32 cl1 = 0;
-    UINT32 cl2 = 255;
+    uint32_t clr1 = 0;
+    uint32_t clr2 = 255;
+    uint32_t cl1 = 0;
+    uint32_t cl2 = 255;
 
-    INT32 add = 1;
+    int32_t add = 1;
 
     while (1){
         clr1++;
@@ -36,11 +37,11 @@ void kernel_main(BootInfo *Boot)
         cl1 |= clr1<<8 | clr1<<16;
         cl2 |= clr2<<8 | clr2<<16;
 
-        for (UINT32 y = 0; y < height; y++) {
-        for (UINT32 x = 0; x < width; x++) {
+        for (uint32_t y = 0; y < height; y++) {
+        for (uint32_t x = 0; x < width; x++) {
 
-            UINT32 tileX = x / TILE_SIZE;
-            UINT32 tileY = y / TILE_SIZE;
+            uint32_t tileX = x / TILE_SIZE;
+            uint32_t tileY = y / TILE_SIZE;
 
             if ((tileX + tileY) % 2 == 0)
                 fb[y * width + x] = cl1;
