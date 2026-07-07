@@ -94,13 +94,7 @@ Requirements
 - OVMF
 - GNU-EFI
 
-Build
-
-```bash
-./build.sh
-```
-
-Run
+Build and Run
 
 ```bash
 ./run.sh
