@@ -81,8 +81,7 @@ kernel/
 include/
     Shared headers
 
-scripts/
-    Build scripts
+Build scripts (run.sh)
 ```
 
 ---
