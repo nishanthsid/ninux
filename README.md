@@ -1,14 +1,12 @@
-# NINUX
+# Ninux
 
 A hobby Unix-like operating system built from scratch in C for the x86-64 architecture.
 
-NINUX is a personal learning project created to explore operating systems from first principles. The goal is not to compete with existing operating systems, but to understand how they work by implementing them piece by piece.
+This is a personal learning project created to explore operating systems from first principles. The goal is not to compete with existing operating systems, but to understand how they work by implementing them piece by piece.
 
 ---
 
-## Why NINUX?
-
-NINUX exists because reading operating system textbooks wasn't enough.
+## Why Ninux?
 
 I wanted to understand how an operating system actually works by building one—from the firmware interface to memory management, scheduling, filesystems, networking, and user space.
 
