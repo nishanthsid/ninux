@@ -1,53 +1,101 @@
 #include <boot.h>
 #include <types.h>
+#include <video/framebuffer.h>
+#include <video/console.h>
+#include <video/color.h>
 
-void kernel_main(BootInfo *Boot)
-{
-    uint32_t *fb = (uint32_t *)Boot->FramebufferBase;
+void kernel_main(BootInfo *Boot){
+   framebuffer_init(Boot);
+   console_init();
+   fb_fill(BLACK);
 
-    uint32_t width  = Boot->Width;
-    uint32_t height = Boot->Height;
+    console_set_fg(WHITE);
+    console_set_bg(BLACK);
 
-    uint32_t TILE_SIZE = 64;
+    console_put_string_color(
+    "==========================================================================\n",
+    BLACK, CYAN);
+    console_put_string_color(
+    "              NINUX STRATEGIC COMMAND TERMINAL v0.1                       \n",
+    BLACK, CYAN);
+    console_put_string_color(
+    "==========================================================================\n\n",
+    BLACK, CYAN);
 
-    uint32_t clr1 = 0;
-    uint32_t clr2 = 255;
-    uint32_t cl1 = 0;
-    uint32_t cl2 = 255;
+    console_put_string("[SYSTEM] Boot Sequence....................... ");
+    console_put_string_color(" COMPLETE ", BLACK, LIME);
+    console_put_string("\n");
 
-    int32_t add = 1;
+    console_put_string("[CPU] AMD64 Long Mode........................ ");
+    console_put_string_color(" ONLINE ", BLACK, GREEN);
+    console_put_string("\n");
 
-    while (1){
-        clr1++;
-        clr1 %= 255;
-        clr2 = 255 - clr1;
-        cl1 = clr1;
-        cl2 = clr2;
-        TILE_SIZE += add;
-        
-        if(TILE_SIZE > 64){
-            add = -1;
-            TILE_SIZE = 64;
-        }
-        if(TILE_SIZE == 0){
-            add = 1;
-            TILE_SIZE = 1;
-        }
+    console_put_string("[MEMORY] Physical Memory Manager............. ");
+    console_put_string_color(" READY ", BLACK, GREEN);
+    console_put_string("\n");
 
-        cl1 |= clr1<<8 | clr1<<16;
-        cl2 |= clr2<<8 | clr2<<16;
+    console_put_string("[VIDEO] GOP Framebuffer...................... ");
+    console_put_string_color(" ACTIVE ", BLACK, CYAN);
+    console_put_string("\n");
 
-        for (uint32_t y = 0; y < height; y++) {
-        for (uint32_t x = 0; x < width; x++) {
+    console_put_string("[VIDEO] Console Driver....................... ");
+    console_put_string_color(" LOADED ", BLACK, CYAN);
+    console_put_string("\n");
 
-            uint32_t tileX = x / TILE_SIZE;
-            uint32_t tileY = y / TILE_SIZE;
+    console_put_string("[SECURITY] Kernel Lockdown................... ");
+    console_put_string_color(" ENABLED ", BLACK, GREEN);
+    console_put_string("\n\n");
 
-            if ((tileX + tileY) % 2 == 0)
-                fb[y * width + x] = cl1;
-            else
-                fb[y * width + x] = cl2;
-        }
-    }
-    }
+    console_put_string_color(
+    "====================== MISSILE CONTROL ======================\n",
+    BLACK, YELLOW);
+
+    console_put_string("SILO-01  STATUS ");
+    console_put_string_color(" ARMED ", WHITE, RED);
+    console_put_string("   TARGET LOCK ");
+    console_put_string_color(" YES ", BLACK, GREEN);
+    console_put_string("\n");
+
+    console_put_string("SILO-02  STATUS ");
+    console_put_string_color(" STANDBY ", BLACK, YELLOW);
+    console_put_string(" TARGET LOCK ");
+    console_put_string_color(" NO ", WHITE, RED);
+    console_put_string("\n");
+
+    console_put_string("SILO-03  STATUS ");
+    console_put_string_color(" OFFLINE ", BLACK, GRAY);
+    console_put_string(" TARGET LOCK ");
+    console_put_string_color(" --- ", BLACK, GRAY);
+    console_put_string("\n");
+
+    console_put_string("SILO-04  STATUS ");
+    console_put_string_color(" READY ", BLACK, LIME);
+    console_put_string("   TARGET LOCK ");
+    console_put_string_color(" YES ", BLACK, GREEN);
+    console_put_string("\n\n");
+
+    console_put_string_color(
+    "======================== LIVE EVENTS ========================\n",
+    BLACK, BLUE);
+
+    console_put_string("[00:00:01] UEFI GOP initialized\n");
+    console_put_string("[00:00:02] ELF kernel loaded\n");
+    console_put_string("[00:00:03] Framebuffer mapped\n");
+    console_put_string("[00:00:04] Console initialized\n");
+    console_put_string("[00:00:05] Video diagnostics complete\n");
+    console_put_string("[00:00:06] Awaiting launch authorization...\n\n");
+
+    console_put_string("AUTHORIZATION ");
+    console_put_string_color(" DENIED ", WHITE, RED);
+    console_put_string("\n");
+
+    console_put_string("REASON        ");
+    console_put_string_color(" DEVELOPMENT BUILD ", BLACK, MAGENTA);
+    console_put_string("\n\n");
+
+    console_put_string_color(
+    "==================== ALL SYSTEMS NOMINAL ====================\n",
+    BLACK, LIME);
+
+    while(1);
 }

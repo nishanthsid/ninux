@@ -4,14 +4,15 @@ set -e
 echo "Cleaning..."
 rm -rf build esp
 mkdir -p build
+mkdir -p build/kernel/video
 mkdir -p esp/EFI/BOOT
 
 echo "[1/6] Compiling bootloader..."
 
 gcc \
     -I/usr/include/efi \
-    -Iinclude \
     -I/usr/include/efi/x86_64 \
+    -Iinclude \
     -fpic \
     -fshort-wchar \
     -ffreestanding \
@@ -62,18 +63,61 @@ echo "[4/6] Building kernel..."
 gcc \
     -c \
     -Iinclude \
-    -I/usr/include/efi \
-    -I/usr/include/efi/x86_64 \
     -ffreestanding \
     -mno-red-zone \
     -Wall \
+    -Wextra \
     kernel/kernel.c \
-    -o build/kernel.o
+    -o build/kernel/kernel.o
+
+gcc \
+    -c \
+    -Iinclude \
+    -ffreestanding \
+    -mno-red-zone \
+    -Wall \
+    -Wextra \
+    kernel/video/framebuffer.c \
+    -o build/kernel/video/framebuffer.o
+
+gcc \
+    -c \
+    -Iinclude \
+    -ffreestanding \
+    -mno-red-zone \
+    -Wall \
+    -Wextra \
+    kernel/video/console.c \
+    -o build/kernel/video/console.o
+
+gcc \
+    -c \
+    -Iinclude \
+    -ffreestanding \
+    -mno-red-zone \
+    -Wall \
+    -Wextra \
+    kernel/video/color.c \
+    -o build/kernel/video/color.o
+
+gcc \
+    -c \
+    -Iinclude \
+    -ffreestanding \
+    -mno-red-zone \
+    -Wall \
+    -Wextra \
+    kernel/video/fonts8x16.c \
+    -o build/kernel/video/fonts8x16.o
 
 ld \
     -T kernel/linker.ld \
     -o build/kernel.elf \
-    build/kernel.o
+    build/kernel/kernel.o \
+    build/kernel/video/framebuffer.o \
+    build/kernel/video/console.o \
+    build/kernel/video/color.o \
+    build/kernel/video/fonts8x16.o
 
 cp build/kernel.elf esp/EFI/BOOT/kernel.elf
 
