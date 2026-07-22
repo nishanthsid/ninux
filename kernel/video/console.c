@@ -2,6 +2,7 @@
 #include <video/framebuffer.h>
 #include <video/fonts8x16.h>
 #include <video/color.h>
+#include <lib/memshift.h>
 
 static uint32_t CUR_X = 0;
 static uint32_t CUR_Y = 0;
@@ -31,7 +32,7 @@ static void put_char_helper(char c, Color fg, Color bg){
     if(c == '\n'){
         CUR_Y++;
         CUR_X = 0;
-        return;
+        cur_x_advance = 0;
     }
     else if(c == '\t'){
         cur_x_advance = 4;
@@ -60,6 +61,11 @@ static void put_char_helper(char c, Color fg, Color bg){
     if(CUR_X >= LINE_WIDTH){
         CUR_X %= LINE_WIDTH;
         CUR_Y++;
+    }
+
+    if(CUR_Y >= LINE_HEIGHT){
+        fb_shift_buffer(SHIFT_LEFT, (CUR_Y - LINE_HEIGHT + 1) * FONT_HEIGHT);
+        CUR_Y = LINE_HEIGHT - 1;
     }
 }
 

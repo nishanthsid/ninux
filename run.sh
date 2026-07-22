@@ -5,6 +5,7 @@ echo "Cleaning..."
 rm -rf build esp
 mkdir -p build
 mkdir -p build/kernel/video
+mkdir -p build/kernel/lib
 mkdir -p esp/EFI/BOOT
 
 echo "[1/6] Compiling bootloader..."
@@ -60,6 +61,7 @@ objcopy \
 
 echo "[4/6] Building kernel..."
 
+# Kernel
 gcc \
     -c \
     -Iinclude \
@@ -70,6 +72,7 @@ gcc \
     kernel/kernel.c \
     -o build/kernel/kernel.o
 
+# Video
 gcc \
     -c \
     -Iinclude \
@@ -110,6 +113,19 @@ gcc \
     kernel/video/fonts8x16.c \
     -o build/kernel/video/fonts8x16.o
 
+# Library
+gcc \
+    -c \
+    -Iinclude \
+    -ffreestanding \
+    -mno-red-zone \
+    -Wall \
+    -Wextra \
+    kernel/lib/memshift.c \
+    -o build/kernel/lib/memshift.o
+
+echo "Linking kernel..."
+
 ld \
     -T kernel/linker.ld \
     -o build/kernel.elf \
@@ -117,7 +133,8 @@ ld \
     build/kernel/video/framebuffer.o \
     build/kernel/video/console.o \
     build/kernel/video/color.o \
-    build/kernel/video/fonts8x16.o
+    build/kernel/video/fonts8x16.o \
+    build/kernel/lib/memshift.o
 
 cp build/kernel.elf esp/EFI/BOOT/kernel.elf
 
