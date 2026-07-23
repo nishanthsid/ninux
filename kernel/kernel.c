@@ -165,7 +165,7 @@ void kernel_main(BootInfo *Boot)
 
         /* Primitive busy-wait delay */
         for (volatile uint64_t delay = 0;
-             delay < 5000000ULL;
+             delay < 50000ULL;
              delay++)
         {
             __asm__ volatile("pause");
