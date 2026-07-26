@@ -116,59 +116,59 @@ void kernel_main(BootInfo *Boot)
 
     while (1) {
 
-        console_put_string("[LOG ");
+        // console_put_string("[LOG ");
 
-        if (counter < 10)
-            console_put_string("000");
-        else if (counter < 100)
-            console_put_string("00");
-        else if (counter < 1000)
-            console_put_string("0");
+        // if (counter < 10)
+        //     console_put_string("000");
+        // else if (counter < 100)
+        //     console_put_string("00");
+        // else if (counter < 1000)
+        //     console_put_string("0");
 
-        console_put_uint(counter);
+        // console_put_uint(counter);
 
-        console_put_string("] ");
+        // console_put_string("] ");
 
-        switch (counter % 8) {
-            case 0:
-                console_put_string_color("INFO ", BLACK, CYAN);
-                break;
-            case 1:
-                console_put_string_color("OK ", BLACK, GREEN);
-                break;
-            case 2:
-                console_put_string_color("WARN ", BLACK, YELLOW);
-                break;
-            case 3:
-                console_put_string_color("ERROR ", WHITE, RED);
-                break;
-            case 4:
-                console_put_string_color("DEBUG ", BLACK, MAGENTA);
-                break;
-            case 5:
-                console_put_string_color("TRACE ", BLACK, BLUE);
-                break;
-            case 6:
-                console_put_string_color("READY ", BLACK, LIME);
-                break;
-            default:
-                console_put_string_color("SYNC ", BLACK, CYAN);
-                break;
-        }
+        // switch (counter % 8) {
+        //     case 0:
+        //         console_put_string_color("INFO ", BLACK, CYAN);
+        //         break;
+        //     case 1:
+        //         console_put_string_color("OK ", BLACK, GREEN);
+        //         break;
+        //     case 2:
+        //         console_put_string_color("WARN ", BLACK, YELLOW);
+        //         break;
+        //     case 3:
+        //         console_put_string_color("ERROR ", WHITE, RED);
+        //         break;
+        //     case 4:
+        //         console_put_string_color("DEBUG ", BLACK, MAGENTA);
+        //         break;
+        //     case 5:
+        //         console_put_string_color("TRACE ", BLACK, BLUE);
+        //         break;
+        //     case 6:
+        //         console_put_string_color("READY ", BLACK, LIME);
+        //         break;
+        //     default:
+        //         console_put_string_color("SYNC ", BLACK, CYAN);
+        //         break;
+        // }
 
-        console_put_string(
-            "Kernel scrolling stress test... "
-            "The quick brown fox jumps over the lazy dog. "
-            "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ\n");
+        // console_put_string(
+        //     "Kernel scrolling stress test... "
+        //     "The quick brown fox jumps over the lazy dog. "
+        //     "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ\n");
 
-        counter++;
+        // counter++;
 
-        /* Primitive busy-wait delay */
-        for (volatile uint64_t delay = 0;
-             delay < 50000ULL;
-             delay++)
-        {
-            __asm__ volatile("pause");
-        }
+        // /* Primitive busy-wait delay */
+        // for (volatile uint64_t delay = 0;
+        //      delay < 50000ULL;
+        //      delay++)
+        // {
+        //     __asm__ volatile("pause");
+        // }
     }
 }

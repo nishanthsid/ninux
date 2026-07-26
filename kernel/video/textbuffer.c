@@ -33,11 +33,25 @@ void tb_putchar(TextBuffer *tb, char c){
 }
 
 void tb_putchar_color(TextBuffer *tb, char c, Color fg, Color bg){
-    Cell cell = get_cell(c, fg, bg);
-    tb->cells[tb->current_cell++] = cell;
     if(tb->current_cell >= tb->history_rows * tb->cols){
         mem_shift(tb->cells, tb->history_rows*tb->cols*sizeof(Cell), SHIFT_LEFT, sizeof(Cell));
         tb->current_cell = tb->history_rows * tb->cols - 1;
+    }
+    if(c == '\n'){
+        for(uint32_t i = tb->current_cell;i < (tb->current_cell / tb->cols + 1)*tb->cols;i++){
+            Cell cell = get_cell(' ', fg, bg);
+            tb->cells[tb->current_cell++] = cell;
+        }
+    }
+    else if(c == '\t'){
+        for(uint32_t i = 0;i < 4;i++){
+            Cell cell = get_cell(' ', fg, bg);
+            tb->cells[tb->current_cell++] = cell;
+        }
+    }
+    else{
+        Cell cell = get_cell(c, fg, bg);
+        tb->cells[tb->current_cell++] = cell;
     }
 }
 
