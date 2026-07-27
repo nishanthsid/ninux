@@ -17,6 +17,7 @@ typedef struct {
     uint32_t history_rows;
     uint32_t scroll_offset;
     uint32_t current_cell;
+    uint32_t capacity;
     Color default_fg;
     Color default_bg;
 } TextBuffer;

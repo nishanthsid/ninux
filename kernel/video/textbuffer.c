@@ -2,7 +2,7 @@
 #include <video/color.h>
 #include <lib/memshift.h>
 
-Cell get_cell(char c, Color fg, Color bg){
+static inline Cell get_cell(char c, Color fg, Color bg){
     return (Cell){
         .c = c,
         .fg = fg,
@@ -26,6 +26,10 @@ void text_buffer_init(
         tb->scroll_offset = 0;
         tb->default_bg = default_bg;
         tb->default_fg = default_fg;
+        tb->capacity = history_rows * cols;
+        for (uint32_t i = 0; i < tb->capacity; i++) {
+            tb->cells[i] = get_cell(' ', default_fg, default_bg);
+        }
 }
 
 void tb_putchar(TextBuffer *tb, char c){
@@ -33,26 +37,33 @@ void tb_putchar(TextBuffer *tb, char c){
 }
 
 void tb_putchar_color(TextBuffer *tb, char c, Color fg, Color bg){
-    if(tb->current_cell >= tb->history_rows * tb->cols){
-        mem_shift(tb->cells, tb->history_rows*tb->cols*sizeof(Cell), SHIFT_LEFT, sizeof(Cell));
-        tb->current_cell = tb->history_rows * tb->cols - 1;
-    }
+    uint32_t cells_needed = 1;
+    uint8_t is_regular_char = 1;
     if(c == '\n'){
-        for(uint32_t i = tb->current_cell;i < (tb->current_cell / tb->cols + 1)*tb->cols;i++){
-            Cell cell = get_cell(' ', fg, bg);
-            tb->cells[tb->current_cell++] = cell;
-        }
+        is_regular_char = 0;
+        uint32_t next_line = (tb->current_cell / tb->cols + 1) * tb->cols;
+        cells_needed = next_line - tb->current_cell;
     }
     else if(c == '\t'){
-        for(uint32_t i = 0;i < 4;i++){
-            Cell cell = get_cell(' ', fg, bg);
-            tb->cells[tb->current_cell++] = cell;
-        }
+        is_regular_char = 0;
+        cells_needed = 4;
     }
-    else{
-        Cell cell = get_cell(c, fg, bg);
+
+    if(tb->current_cell + cells_needed > tb->capacity){
+        mem_shift(tb->cells, tb->capacity*sizeof(Cell), SHIFT_LEFT, (tb->current_cell + cells_needed - tb->capacity)*sizeof(Cell));
+        tb->current_cell = tb->capacity - cells_needed;
+    }
+
+    for(uint32_t i = 0;i < cells_needed - 1;i++){
+        Cell cell = get_cell(' ', fg, bg);
         tb->cells[tb->current_cell++] = cell;
     }
+    Cell cell;
+
+    if(is_regular_char) cell = get_cell(c, fg, bg);
+    else cell = get_cell(' ', fg, bg);
+    
+    tb->cells[tb->current_cell++] = cell;
 }
 
 
