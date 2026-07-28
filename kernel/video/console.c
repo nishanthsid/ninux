@@ -3,6 +3,7 @@
 #include <video/fonts8x16.h>
 #include <video/color.h>
 #include <lib/memshift.h>
+#include <video/textbuffer.h>
 
 static uint32_t CUR_X = 0;
 static uint32_t CUR_Y = 0;
@@ -17,14 +18,6 @@ void console_init(){
 
     LINE_WIDTH = width / FONT_WIDTH;
     LINE_HEIGHT = height / FONT_HEIGHT;
-}
-
-void console_set_fg(Color fg){
-    FG = fg;
-}
-
-void console_set_bg(Color bg){
-    BG = bg;
 }
 
 static void put_char_helper(char c, Color fg, Color bg){
@@ -69,27 +62,32 @@ static void put_char_helper(char c, Color fg, Color bg){
     }
 }
 
-void console_put_char(char c){
+void _console_put_char(char c){
     put_char_helper(c, FG, BG);
 }
 
-void console_put_char_color(char c, Color fg, Color bg){
+void console_put_char(TextBuffer *tb, char c){
+    tb_putchar(tb, c);
+}
+
+
+void _console_put_char_color(char c, Color fg, Color bg){
     put_char_helper(c, fg, bg);
 }
 
-void console_put_string(const char * string){
+void _console_put_string(const char * string){
     uint32_t i = 0;
     while(string[i] != 0){
-        console_put_char(string[i]);
+        _console_put_char(string[i]);
         i++;
     }
 }
 
 
-void console_put_string_color(const char * string, Color fg, Color bg){
+void _console_put_string_color(const char * string, Color fg, Color bg){
     uint32_t i = 0;
     while(string[i] != 0){
-        console_put_char_color(string[i], fg, bg);
+        _console_put_char_color(string[i], fg, bg);
         i++;
     }
 }
