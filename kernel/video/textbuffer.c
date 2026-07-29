@@ -79,4 +79,40 @@ void tb_puts(TextBuffer *tb, const char *string){
     tb_puts_color(tb, string, tb->default_fg, tb->default_bg);
 }
 
+void tb_set_cursor(TextBuffer *tb, uint32_t cursor_x, uint32_t cursor_y){
+    tb->current_cell = cursor_x * tb->cols + cursor_y;
+    if(tb->current_cell >= tb->capacity){
+        tb->current_cell = tb->capacity - 1;
+    }
+}
 
+uint32_t tb_get_cursor_x(TextBuffer *tb){
+    if(tb->cols != 0){
+        return tb->current_cell / tb->cols;
+    }
+    return TB_ERROR;
+}
+
+uint32_t tb_get_cursor_y(TextBuffer *tb){
+    if(tb->cols != 0){
+        return tb->current_cell % tb->cols;
+    }
+    return TB_ERROR;
+}
+
+void tb_scroll(TextBuffer *tb, uint8_t scroll_direction, uint32_t scroll_rows){
+    uint32_t cur_x = tb_get_cursor_x(tb);
+    uint32_t cur_y = tb_get_cursor_y(tb);
+    if(scroll_direction == SCROLL_UP){
+        if(scroll_rows > cur_x) scroll_rows = cur_x;
+        tb->scroll_offset = cur_x - scroll_rows;
+    }
+    else if(scroll_direction == SCROLL_DOWN){
+        if(scroll_rows > (tb->history_rows - cur_x)) scroll_rows = tb->history_rows - cur_x;
+        tb->scroll_offset = cur_x + scroll_rows;
+    }
+}
+void tb_scroll_to(TextBuffer *tb, uint32_t row){
+    if(row > tb->history_rows) return;
+    tb->scroll_offset = row;
+}
