@@ -9,8 +9,8 @@ static uint32_t CUR_X = 0;
 static uint32_t CUR_Y = 0;
 static uint32_t LINE_WIDTH = 0;
 static uint32_t LINE_HEIGHT = 0;
-static Color FG = WHITE;
-static Color BG = BLACK;
+static color24 FG = WHITE;
+static color24 BG = BLACK;
 
 void console_init(){
     uint32_t height = fb_get_height();
@@ -20,7 +20,7 @@ void console_init(){
     LINE_HEIGHT = height / FONT_HEIGHT;
 }
 
-static void put_char_helper(char c, Color fg, Color bg){
+static void put_char_helper(char c, color24 fg, color24 bg){
     uint32_t cur_x_advance = 1;
     if(c == '\n'){
         CUR_Y++;
@@ -66,12 +66,12 @@ void _console_put_char(char c){
     put_char_helper(c, FG, BG);
 }
 
-void console_put_char(TextBuffer *tb, char c){
+void console_put_char(text_buffer *tb, char c){
     tb_putchar(tb, c);
 }
 
 
-void _console_put_char_color(char c, Color fg, Color bg){
+void _console_put_char_color(char c, color24 fg, color24 bg){
     put_char_helper(c, fg, bg);
 }
 
@@ -84,7 +84,7 @@ void _console_put_string(const char * string){
 }
 
 
-void _console_put_string_color(const char * string, Color fg, Color bg){
+void _console_put_string_color(const char * string, color24 fg, color24 bg){
     uint32_t i = 0;
     while(string[i] != 0){
         _console_put_char_color(string[i], fg, bg);

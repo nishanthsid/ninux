@@ -12,7 +12,7 @@ uint32_t fb_get_height(void);
 
 void fb_shift_buffer(uint8_t shift_direction, uint32_t shift_postitions);
 
-void fb_put_pixel(uint32_t x, uint32_t y , Color color);
-void fb_fill(Color color);
+void fb_put_pixel(uint32_t x, uint32_t y , color24 color);
+void fb_fill(color24 color);
 
 #endif

@@ -7,51 +7,47 @@
 #define SCROLL_UP 1
 #define SCROLL_DOWN 0
 
-//Errors
+// text_buffer Status Enum
+typedef enum {
+    TB_OK,
+    TBERROR_OUT_OF_BOUNDS
+} tb_status;
 
-#define TB_ERROR 1 << 32 - 1
 
 typedef struct {
-    Color fg;
-    Color bg;
+    color24 fg;
+    color24 bg;
     char c;
-} Cell;
+} cell;
 
 typedef struct {
-    Cell *cells;
-    uint32_t visible_rows;
+    cell *cells;
+    uint32_t rows;
     uint32_t cols;
-    uint32_t history_rows;
-    uint32_t scroll_offset;
-    uint32_t current_cell;
     uint32_t capacity;
-    Color default_fg;
-    Color default_bg;
-} TextBuffer;
+    color24 default_fg;
+    color24 default_bg;
+} text_buffer;
 
-void text_buffer_init(
-    TextBuffer *tb,
-    Cell *cells,
-    uint32_t visible_rows,
+void tb_init(
+    text_buffer *tb,
+    cell *cells,
+    uint32_t rows,
     uint32_t cols, 
-    uint32_t history_rows,
-    Color default_fg,
-    Color default_bg
+    color24 default_fg,
+    color24 default_bg
 );
 
 
-void tb_putchar(TextBuffer *tb, char c);
-void tb_putchar_color(TextBuffer *tb, char c, Color fg, Color bg);
+tb_status tb_putchar(text_buffer *tb, uint32_t row, uint32_t col, char c);
+tb_status tb_putchar_color(text_buffer *tb,  uint32_t row, uint32_t col, char c, color24 fg, color24 bg);
 
-void tb_puts(TextBuffer *tb, const char *string);
-void tb_puts_color(TextBuffer *tb, const char *string, Color fg, Color bg);
+cell *tb_getcell(text_buffer *tb, uint32_t row, uint32_t col);
+tb_status tb_setcell(text_buffer *tb, uint32_t row, uint32_t col, cell cl);
+tb_status tb_fill_color(text_buffer *tb, char c, color24 fg, color24 bg);
+tb_status tb_fill(text_buffer *tb, char c);
+tb_status tb_clear(text_buffer *tb);
 
-void tb_set_cursor(TextBuffer *tb, uint32_t cursor_x, uint32_t cursor_y);
-uint32_t tb_get_cursor_x(TextBuffer *tb);
-uint32_t tb_get_cursor_y(TextBuffer *tb);
-
-void tb_scroll(TextBuffer *tb, uint8_t scroll_direction, uint32_t scroll_rows);
-void tb_scroll_to(TextBuffer *tb, uint32_t row);
-
+tb_status tb_copy_cell(text_buffer *tb, uint32_t source_row, uint32_t source_col, uint32_t target_row, uint32_t target_col);
 
 #endif
