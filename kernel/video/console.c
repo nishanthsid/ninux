@@ -20,7 +20,21 @@ void console_init(){
     LINE_HEIGHT = height / FONT_HEIGHT;
 }
 
-static void put_char_helper(char c, color24 fg, color24 bg){
+uint32_t console_get_line_height(){
+    return LINE_HEIGHT;
+}
+
+uint32_t console_get_line_width(){
+    return LINE_WIDTH;
+}
+
+static void put_char_helper(console *cns, uint32_t row, uint32_t col){
+    text_buffer *tb = cns->tb;
+    cell *cl = tb_getcell(tb, row, col);
+    char c = cl->c;
+    color24 fg = cl->fg;
+    color24 bg = cl->bg;
+
     uint32_t cur_x_advance = 1;
     if(c == '\n'){
         CUR_Y++;
@@ -62,7 +76,7 @@ static void put_char_helper(char c, color24 fg, color24 bg){
     }
 }
 
-void _console_put_char(char c){
+void console_put_char(char c){
     put_char_helper(c, FG, BG);
 }
 
@@ -71,23 +85,23 @@ void console_put_char(text_buffer *tb, char c){
 }
 
 
-void _console_put_char_color(char c, color24 fg, color24 bg){
+void console_put_char_color(char c, color24 fg, color24 bg){
     put_char_helper(c, fg, bg);
 }
 
-void _console_put_string(const char * string){
+void console_put_string(const char * string){
     uint32_t i = 0;
     while(string[i] != 0){
-        _console_put_char(string[i]);
+        console_put_char(string[i]);
         i++;
     }
 }
 
 
-void _console_put_string_color(const char * string, color24 fg, color24 bg){
+void console_put_string_color(const char * string, color24 fg, color24 bg){
     uint32_t i = 0;
     while(string[i] != 0){
-        _console_put_char_color(string[i], fg, bg);
+        console_put_char_color(string[i], fg, bg);
         i++;
     }
 }
