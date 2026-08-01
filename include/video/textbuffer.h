@@ -39,6 +39,8 @@ void tb_init(
 );
 
 
+//Some properties of this text buffer should go to console
+
 tb_status tb_putchar(text_buffer *tb, uint32_t row, uint32_t col, char c);
 tb_status tb_putchar_color(text_buffer *tb,  uint32_t row, uint32_t col, char c, color24 fg, color24 bg);
 
