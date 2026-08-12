@@ -12,9 +12,13 @@ typedef struct {
     uint32_t cursor_x;
     uint32_t cursor_y;
     uint32_t scroll_offset;
+    color24 default_fg;
+    color24 default_bg;
 } console;
 
-void console_init();
+void console_sys_init();
+
+void console_init(console * cns, text_buffer *tb, color24 bg, color24 fg);
 
 uint32_t console_get_line_height();
 uint32_t console_get_line_width();

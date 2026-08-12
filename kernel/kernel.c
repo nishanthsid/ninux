@@ -2,9 +2,18 @@
 #include <types.h>
 #include <video/framebuffer.h>
 #include <video/console.h>
+#include <video/textbuffer.h>
 #include <video/color.h>
 
-static void console_put_uint(uint32_t value) {
+#define TB_MAX_ROWS 100
+#define TB_MAX_COLS 160
+
+static cell console_cells[TB_MAX_ROWS * TB_MAX_COLS];
+static text_buffer tb;
+static console cns;
+
+static void console_put_uint(uint32_t value)
+{
     char buffer[11];
     int i = 10;
 
@@ -15,157 +24,342 @@ static void console_put_uint(uint32_t value) {
         value /= 10;
     } while (value);
 
-    console_put_string(&buffer[i]);
+    console_put_string(&cns, &buffer[i]);
 }
 
 void kernel_main(BootInfo *Boot)
 {
     framebuffer_init(Boot);
-    console_init();
+
+    console_sys_init();
+
     fb_fill(BLACK);
 
+    uint32_t rows = console_get_line_height();
+    uint32_t cols = console_get_line_width();
+
+    /*
+     * TextBuffer owns the dimensions of its storage.
+     *
+     * For now the buffer is screen-sized.
+     */
+    tb_init(
+        &tb,
+        console_cells,
+        rows,
+        cols,
+        WHITE,
+        BLACK
+    );
+
+    console_init(
+        &cns,
+        &tb,
+        WHITE,
+        BLACK
+    );
+
     console_put_string_color(
+        &cns,
         "==========================================================================\n",
-        BLACK, CYAN);
+        BLACK,
+        CYAN
+    );
+
     console_put_string_color(
+        &cns,
         "              NINUX STRATEGIC COMMAND TERMINAL v0.1                       \n",
-        BLACK, CYAN);
+        BLACK,
+        CYAN
+    );
+
     console_put_string_color(
+        &cns,
         "==========================================================================\n\n",
-        BLACK, CYAN);
+        BLACK,
+        CYAN
+    );
 
-    console_put_string("[SYSTEM] Boot Sequence....................... ");
-    console_put_string_color(" COMPLETE ", BLACK, LIME);
-    console_put_string("\n");
-
-    console_put_string("[CPU] AMD64 Long Mode........................ ");
-    console_put_string_color(" ONLINE ", BLACK, GREEN);
-    console_put_string("\n");
-
-    console_put_string("[MEMORY] Physical Memory Manager............. ");
-    console_put_string_color(" READY ", BLACK, GREEN);
-    console_put_string("\n");
-
-    console_put_string("[VIDEO] GOP Framebuffer...................... ");
-    console_put_string_color(" ACTIVE ", BLACK, CYAN);
-    console_put_string("\n");
-
-    console_put_string("[VIDEO] Console Driver....................... ");
-    console_put_string_color(" LOADED ", BLACK, CYAN);
-    console_put_string("\n");
-
-    console_put_string("[SECURITY] Kernel Lockdown................... ");
-    console_put_string_color(" ENABLED ", BLACK, GREEN);
-    console_put_string("\n\n");
+    console_put_string(
+        &cns,
+        "[SYSTEM] Boot Sequence....................... "
+    );
 
     console_put_string_color(
+        &cns,
+        " COMPLETE ",
+        BLACK,
+        LIME
+    );
+
+    console_put_string(&cns, "\n");
+
+    console_put_string(
+        &cns,
+        "[CPU] AMD64 Long Mode........................ "
+    );
+
+    console_put_string_color(
+        &cns,
+        " ONLINE ",
+        BLACK,
+        GREEN
+    );
+
+    console_put_string(&cns, "\n");
+
+    console_put_string(
+        &cns,
+        "[MEMORY] Physical Memory Manager............. "
+    );
+
+    console_put_string_color(
+        &cns,
+        " READY ",
+        BLACK,
+        GREEN
+    );
+
+    console_put_string(&cns, "\n");
+
+    console_put_string(
+        &cns,
+        "[VIDEO] GOP Framebuffer...................... "
+    );
+
+    console_put_string_color(
+        &cns,
+        " ACTIVE ",
+        BLACK,
+        CYAN
+    );
+
+    console_put_string(&cns, "\n");
+
+    console_put_string(
+        &cns,
+        "[VIDEO] Console Driver....................... "
+    );
+
+    console_put_string_color(
+        &cns,
+        " LOADED ",
+        BLACK,
+        CYAN
+    );
+
+    console_put_string(&cns, "\n");
+
+    console_put_string(
+        &cns,
+        "[SECURITY] Kernel Lockdown................... "
+    );
+
+    console_put_string_color(
+        &cns,
+        " ENABLED ",
+        BLACK,
+        GREEN
+    );
+
+    console_put_string(&cns, "\n\n");
+
+    console_put_string_color(
+        &cns,
         "====================== MISSILE CONTROL ======================\n",
-        BLACK, YELLOW);
+        BLACK,
+        YELLOW
+    );
 
-    console_put_string("SILO-01  STATUS ");
-    console_put_string_color(" ARMED ", WHITE, RED);
-    console_put_string("   TARGET LOCK ");
-    console_put_string_color(" YES ", BLACK, GREEN);
-    console_put_string("\n");
-
-    console_put_string("SILO-02  STATUS ");
-    console_put_string_color(" STANDBY ", BLACK, YELLOW);
-    console_put_string(" TARGET LOCK ");
-    console_put_string_color(" NO ", WHITE, RED);
-    console_put_string("\n");
-
-    console_put_string("SILO-03  STATUS ");
-    console_put_string_color(" OFFLINE ", BLACK, GRAY);
-    console_put_string(" TARGET LOCK ");
-    console_put_string_color(" --- ", BLACK, GRAY);
-    console_put_string("\n");
-
-    console_put_string("SILO-04  STATUS ");
-    console_put_string_color(" READY ", BLACK, LIME);
-    console_put_string("   TARGET LOCK ");
-    console_put_string_color(" YES ", BLACK, GREEN);
-    console_put_string("\n\n");
+    console_put_string(&cns, "SILO-01  STATUS ");
 
     console_put_string_color(
+        &cns,
+        " ARMED ",
+        WHITE,
+        RED
+    );
+
+    console_put_string(
+        &cns,
+        "   TARGET LOCK "
+    );
+
+    console_put_string_color(
+        &cns,
+        " YES ",
+        BLACK,
+        GREEN
+    );
+
+    console_put_string(&cns, "\n");
+
+    console_put_string(&cns, "SILO-02  STATUS ");
+
+    console_put_string_color(
+        &cns,
+        " STANDBY ",
+        BLACK,
+        YELLOW
+    );
+
+    console_put_string(
+        &cns,
+        " TARGET LOCK "
+    );
+
+    console_put_string_color(
+        &cns,
+        " NO ",
+        WHITE,
+        RED
+    );
+
+    console_put_string(&cns, "\n");
+
+    console_put_string(&cns, "SILO-03  STATUS ");
+
+    console_put_string_color(
+        &cns,
+        " OFFLINE ",
+        BLACK,
+        GRAY
+    );
+
+    console_put_string(
+        &cns,
+        " TARGET LOCK "
+    );
+
+    console_put_string_color(
+        &cns,
+        " --- ",
+        BLACK,
+        GRAY
+    );
+
+    console_put_string(&cns, "\n");
+
+    console_put_string(&cns, "SILO-04  STATUS ");
+
+    console_put_string_color(
+        &cns,
+        " READY ",
+        BLACK,
+        LIME
+    );
+
+    console_put_string(
+        &cns,
+        "   TARGET LOCK "
+    );
+
+    console_put_string_color(
+        &cns,
+        " YES ",
+        BLACK,
+        GREEN
+    );
+
+    console_put_string(&cns, "\n\n");
+
+    console_put_string_color(
+        &cns,
         "======================== LIVE EVENTS ========================\n",
-        BLACK, BLUE);
+        BLACK,
+        BLUE
+    );
 
-    console_put_string("[00:00:01] UEFI GOP initialized\n");
-    console_put_string("[00:00:02] ELF kernel loaded\n");
-    console_put_string("[00:00:03] Framebuffer mapped\n");
-    console_put_string("[00:00:04] Console initialized\n");
-    console_put_string("[00:00:05] Video diagnostics complete\n");
-    console_put_string("[00:00:06] Awaiting launch authorization...\n\n");
+    console_put_string(&cns, "[00:00:01] UEFI GOP initialized\n");
+    console_put_string(&cns, "[00:00:02] ELF kernel loaded\n");
+    console_put_string(&cns, "[00:00:03] Framebuffer mapped\n");
+    console_put_string(&cns, "[00:00:04] Console initialized\n");
+    console_put_string(&cns, "[00:00:05] Video diagnostics complete\n");
+    console_put_string(&cns, "[00:00:06] Awaiting launch authorization...\n\n");
 
-    console_put_string("AUTHORIZATION ");
-    console_put_string_color(" DENIED ", WHITE, RED);
-    console_put_string("\n");
-
-    console_put_string("REASON        ");
-    console_put_string_color(" DEVELOPMENT BUILD ", BLACK, MAGENTA);
-    console_put_string("\n\n");
+    console_put_string(&cns, "AUTHORIZATION ");
 
     console_put_string_color(
-        "==================== ALL SYSTEMS NOMINAL ====================\n\n",
-        BLACK, LIME);
+        &cns,
+        " DENIED ",
+        WHITE,
+        RED
+    );
 
-    uint32_t counter = 1;
+    console_put_string(&cns, "\n");
+
+    console_put_string(&cns, "REASON        ");
+
+    console_put_string_color(
+        &cns,
+        " DEVELOPMENT BUILD ",
+        BLACK,
+        MAGENTA
+    );
+
+    console_put_string(&cns, "\n\n");
+
+    console_put_string_color(
+        &cns,
+        "==================== ALL SYSTEMS NOMINAL ====================\n\n",
+        BLACK,
+        LIME
+    );
+
+
+    /*
+     * ============================================================
+     * SCROLLING STRESS TEST
+     * ============================================================
+     *
+     * This deliberately writes more lines than the visible
+     * console can hold.
+     *
+     * Watch the line numbers at the bottom of the screen.
+     */
+
+    console_put_string_color(
+        &cns,
+        "====================== SCROLL TEST ==========================\n",
+        BLACK,
+        YELLOW
+    );
+
+    for (uint32_t i = 0; i < 100; i++) {
+
+        console_put_string(&cns, "[SCROLL TEST] Line ");
+
+        console_put_uint(i);
+
+        if (i % 2 == 0) {
+            console_put_string_color(
+                &cns,
+                " EVEN ",
+                BLACK,
+                CYAN
+            );
+        }
+        else {
+            console_put_string_color(
+                &cns,
+                " ODD ",
+                BLACK,
+                GREEN
+            );
+        }
+
+        console_put_string(
+            &cns,
+            " -- The quick brown fox jumps over the lazy dog.\n"
+        );
+    }
+
+
+    /*
+     * Stay alive.
+     */
 
     while (1) {
-
-        // console_put_string("[LOG ");
-
-        // if (counter < 10)
-        //     console_put_string("000");
-        // else if (counter < 100)
-        //     console_put_string("00");
-        // else if (counter < 1000)
-        //     console_put_string("0");
-
-        // console_put_uint(counter);
-
-        // console_put_string("] ");
-
-        // switch (counter % 8) {
-        //     case 0:
-        //         console_put_string_color("INFO ", BLACK, CYAN);
-        //         break;
-        //     case 1:
-        //         console_put_string_color("OK ", BLACK, GREEN);
-        //         break;
-        //     case 2:
-        //         console_put_string_color("WARN ", BLACK, YELLOW);
-        //         break;
-        //     case 3:
-        //         console_put_string_color("ERROR ", WHITE, RED);
-        //         break;
-        //     case 4:
-        //         console_put_string_color("DEBUG ", BLACK, MAGENTA);
-        //         break;
-        //     case 5:
-        //         console_put_string_color("TRACE ", BLACK, BLUE);
-        //         break;
-        //     case 6:
-        //         console_put_string_color("READY ", BLACK, LIME);
-        //         break;
-        //     default:
-        //         console_put_string_color("SYNC ", BLACK, CYAN);
-        //         break;
-        // }
-
-        // console_put_string(
-        //     "Kernel scrolling stress test... "
-        //     "The quick brown fox jumps over the lazy dog. "
-        //     "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ\n");
-
-        // counter++;
-
-        // /* Primitive busy-wait delay */
-        // for (volatile uint64_t delay = 0;
-        //      delay < 50000ULL;
-        //      delay++)
-        // {
-        //     __asm__ volatile("pause");
-        // }
+        __asm__ volatile("hlt");
     }
 }

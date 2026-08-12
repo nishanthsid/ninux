@@ -25,8 +25,6 @@ void tb_init(text_buffer *tb, cell *cells, uint32_t rows, uint32_t cols,color24 
         tb->cells = cells;
         tb->cols = cols;
         tb->rows = rows;
-        tb->default_bg = default_bg;
-        tb->default_fg = default_fg;
         tb->capacity = rows * cols;
         for (uint32_t i = 0; i < tb->capacity; i++) {
             tb->cells[i] = get_cell(' ', default_fg, default_bg);
@@ -34,11 +32,9 @@ void tb_init(text_buffer *tb, cell *cells, uint32_t rows, uint32_t cols,color24 
 }
 
 
-tb_status tb_putchar(text_buffer *tb, uint32_t row, uint32_t col, char c){
-    return tb_putchar_color(tb, row, col, c, tb->default_fg, tb->default_bg);
-}
 
-tb_status tb_putchar_color(text_buffer *tb,  uint32_t row, uint32_t col, char c, color24 fg, color24 bg){
+
+tb_status tb_putchar(text_buffer *tb,  uint32_t row, uint32_t col, char c, color24 fg, color24 bg){
     uint32_t index = 0;
     tb_status vaild = check_index(tb, row, col, &index);
     if(vaild == TB_OK){
@@ -66,19 +62,16 @@ tb_status tb_setcell(text_buffer *tb, uint32_t row, uint32_t col, cell cl){
     return vaild;
 }
 
-tb_status tb_fill_color(text_buffer *tb, char c, color24 fg, color24 bg){
+tb_status tb_fill(text_buffer *tb, char c, color24 fg, color24 bg){
     for(uint32_t index = 0; index < tb->capacity; index++){
         tb->cells[index] = get_cell(c, fg, bg);
     }
     return TB_OK;
 }
 
-tb_status tb_fill(text_buffer *tb, char c){
-    return tb_fill_color(tb, c, tb->default_fg, tb->default_bg);
-}
 
-tb_status tb_clear(text_buffer *tb){
-    return tb_fill_color(tb, ' ', tb->default_fg, tb->default_bg);
+tb_status tb_clear(text_buffer *tb, color24 fg, color24 bg){
+    return tb_fill(tb, ' ', fg, bg);
 }
 
 tb_status tb_copy_cell(text_buffer *tb, uint32_t source_row, uint32_t source_col, uint32_t target_row, uint32_t target_col){
