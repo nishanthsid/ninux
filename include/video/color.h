@@ -9,37 +9,37 @@ typedef struct __attribute__((packed)){
     uint8_t green;
     uint8_t blue;
 
-} Color;
+} color24;
 
-uint32_t get_pixel_value(Color color);
-Color color_rgb(uint8_t, uint8_t, uint8_t);
+uint32_t get_pixel_value(color24 color);
+color24 color_rgb(uint8_t, uint8_t, uint8_t);
 
 
-#define BLACK        ((Color){  0,   0,   0})
-#define WHITE        ((Color){255, 255, 255})
+#define BLACK        ((color24){  0,   0,   0})
+#define WHITE        ((color24){255, 255, 255})
 
-#define RED          ((Color){255,   0,   0})
-#define GREEN        ((Color){  0, 255,   0})
-#define BLUE         ((Color){  0,   0, 255})
+#define RED          ((color24){255,   0,   0})
+#define GREEN        ((color24){  0, 255,   0})
+#define BLUE         ((color24){  0,   0, 255})
 
-#define YELLOW       ((Color){255, 255,   0})
-#define CYAN         ((Color){  0, 255, 255})
-#define MAGENTA      ((Color){255,   0, 255})
+#define YELLOW       ((color24){255, 255,   0})
+#define CYAN         ((color24){  0, 255, 255})
+#define MAGENTA      ((color24){255,   0, 255})
 
-#define ORANGE       ((Color){255, 165,   0})
-#define PURPLE       ((Color){128,   0, 128})
-#define PINK         ((Color){255, 192, 203})
+#define ORANGE       ((color24){255, 165,   0})
+#define PURPLE       ((color24){128,   0, 128})
+#define PINK         ((color24){255, 192, 203})
 
-#define BROWN        ((Color){139,  69,  19})
-#define GRAY         ((Color){128, 128, 128})
-#define LIGHT_GRAY   ((Color){211, 211, 211})
-#define DARK_GRAY    ((Color){ 64,  64,  64})
+#define BROWN        ((color24){139,  69,  19})
+#define GRAY         ((color24){128, 128, 128})
+#define LIGHT_GRAY   ((color24){211, 211, 211})
+#define DARK_GRAY    ((color24){ 64,  64,  64})
 
-#define LIME         ((Color){ 50, 205,  50})
-#define NAVY         ((Color){  0,   0, 128})
-#define TEAL         ((Color){  0, 128, 128})
-#define OLIVE        ((Color){128, 128,   0})
-#define MAROON       ((Color){128,   0,   0})
-#define SILVER       ((Color){192, 192, 192})
+#define LIME         ((color24){ 50, 205,  50})
+#define NAVY         ((color24){  0,   0, 128})
+#define TEAL         ((color24){  0, 128, 128})
+#define OLIVE        ((color24){128, 128,   0})
+#define MAROON       ((color24){128,   0,   0})
+#define SILVER       ((color24){192, 192, 192})
 
 #endif

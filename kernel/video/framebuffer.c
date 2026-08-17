@@ -26,7 +26,7 @@ uint32_t fb_get_width(){
     return WIDTH;
 }
 
-void fb_put_pixel(uint32_t x, uint32_t y, Color color){
+void fb_put_pixel(uint32_t x, uint32_t y, color24 color){
     if (x >= WIDTH || y >= HEIGHT){
         return;
     }
@@ -38,7 +38,7 @@ void fb_shift_buffer(uint8_t shift_direction, uint32_t shift_postitions){
     mem_shift(FB_BASE, FRAME_BUFFER_SIZE, shift_direction, bytes);
 }
 
-void fb_fill(Color color){
+void fb_fill(color24 color){
     uint32_t pixel = get_pixel_value(color);
     for(uint32_t i = 0; i < WIDTH;i++){
         for(uint32_t j = 0; j < HEIGHT;j++){
