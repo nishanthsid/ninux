@@ -56,12 +56,21 @@ static inline void console_render_raw(uint32_t port_x, uint32_t port_y, char c, 
 }
 
 static inline void console_render_char(console *cns){
-    uint32_t port_y = cns->scroll_offset + cns->cursor_y;
+    uint32_t port_y = cns->cursor_y;
     uint32_t port_x = cns->cursor_x;
     cell * cl = tb_getcell(cns->tb, cns->scroll_offset + cns->cursor_y, cns->cursor_x);
     console_render_raw(port_x, port_y,cl->c,cl->fg, cl->bg);
 }
 
+
+static void console_flush(console *cns){
+    for(uint32_t i = 0; i < LINE_HEIGHT;i++){
+        for(uint32_t j = 0;j < LINE_WIDTH;j++){
+            cell *c = tb_getcell(cns->tb, cns->scroll_offset + i, j);
+            console_render_raw(j, i, c->c, c->fg, c->bg);
+        }
+    }
+}
 
 
 
@@ -81,19 +90,25 @@ static void put_char_helper(console *cns, char c, color24 fg, color24 bg){
         tb_putchar(tb, cns->cursor_y + cns->scroll_offset, cns->cursor_x, c, fg, bg);
         console_render_char(cns);
     }
-    cns->cursor_x+= cur_x_advance;
+    cns->cursor_x += cur_x_advance;
     if(cns->cursor_x>= LINE_WIDTH){
         cns->cursor_x%= LINE_WIDTH;
         cns->cursor_y++;
     }
 
     if(cns->scroll_offset + cns->cursor_y >= tb->rows){
-        mem_shift(cns->tb, tb->capacity*sizeof(cell), SHIFT_LEFT, (cns->scroll_offset + cns->cursor_y - tb->rows) * tb->cols*sizeof(cell));
+        mem_shift(cns->tb->cells, tb->capacity*sizeof(cell), SHIFT_LEFT, (cns->scroll_offset + cns->cursor_y - tb->rows) * tb->cols*sizeof(cell));
         cns->cursor_y = LINE_HEIGHT - 1;
     }
     else if(cns->cursor_y >= LINE_HEIGHT){
-        cns->scroll_offset += (cns->cursor_y - LINE_HEIGHT);
-        cns->cursor_y = LINE_HEIGHT - 1;
+
+        uint32_t lines_to_scroll =
+            cns->cursor_y - LINE_HEIGHT + 1;
+
+        cns->scroll_offset += lines_to_scroll;
+        cns->cursor_y -= lines_to_scroll;
+
+        console_flush(cns);
     }
 }
 
@@ -120,6 +135,7 @@ void console_put_string(console *cns, const char * string){
 
 void console_scroll_to(console *cns, uint32_t row){
     cns->scroll_offset = row;
+    console_flush(cns);
 }
 
 void console_fill_color(console *cns, char c, color24 fg, color24 bg){
