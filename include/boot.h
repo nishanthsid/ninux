@@ -9,6 +9,6 @@ typedef struct {
     uint32_t  Width;
     uint32_t  Height;
     uint32_t  PixelsPerScanLine;
-} BootInfo;
+} boot_info;
 
 #endif

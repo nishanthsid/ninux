@@ -2,8 +2,7 @@
 #define CONSOLE_H
 
 #include <video/color.h>
-#include <video/textbuffer.h>
-#include <video/textbuffer.h>
+#include <console/textbuffer.h>
 
 
 

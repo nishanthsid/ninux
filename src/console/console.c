@@ -1,9 +1,9 @@
-#include <video/console.h>
+#include <console/console.h>
 #include <video/framebuffer.h>
 #include <video/fonts8x16.h>
 #include <video/color.h>
 #include <lib/memshift.h>
-#include <video/textbuffer.h>
+#include <console/textbuffer.h>
 
 static uint32_t LINE_WIDTH = 0;
 static uint32_t LINE_HEIGHT = 0;
