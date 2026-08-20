@@ -8,7 +8,7 @@
 static uint32_t LINE_WIDTH = 0;
 static uint32_t LINE_HEIGHT = 0;
 
-void console_sys_init(){
+void fb_console_init(){
     uint32_t height = fb_get_height();
     uint32_t width = fb_get_width();
 

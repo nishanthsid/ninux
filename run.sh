@@ -125,6 +125,30 @@ gcc \
 src/video/fonts8x16.c \
 -o build/kernel/video/fonts8x16.o
 
+# Kernal Console
+
+gcc \
+-c \
+-Iinclude \
+-ffreestanding \
+-mno-red-zone \
+-Wall \
+-Wextra \
+src/console/kernc.c \
+-o build/kernel/video/kernc.o
+
+# Kernal Console
+
+gcc \
+-c \
+-Iinclude \
+-ffreestanding \
+-mno-red-zone \
+-Wall \
+-Wextra \
+src/lib/printk.c \
+-o build/kernel/lib/printk.o
+
 # Library
 
 gcc \
@@ -148,7 +172,9 @@ build/kernel/video/console.o \
 build/kernel/video/textbuffer.o \
 build/kernel/video/color.o \
 build/kernel/video/fonts8x16.o \
-build/kernel/lib/memshift.o
+build/kernel/lib/memshift.o \
+build/kernel/video/kernc.o \
+build/kernel/lib/printk.o
 
 cp build/kernel.elf esp/EFI/BOOT/kernel.elf
 

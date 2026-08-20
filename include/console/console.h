@@ -15,7 +15,7 @@ typedef struct {
     color24 default_bg;
 } console;
 
-void console_sys_init();
+void fb_console_init();
 
 void console_init(console * cns, text_buffer *tb, color24 bg, color24 fg);
 

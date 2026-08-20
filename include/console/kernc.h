@@ -13,4 +13,6 @@ extern cell console_cells[TB_MAX_ROWS * TB_MAX_COLS];
 
 void kernc_init();
 
+console *get_kernel_console();
+
 #endif
