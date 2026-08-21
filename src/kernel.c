@@ -15,38 +15,25 @@ void kernel_main(boot_info *bt_info)
 
     printk("\n");
     printk("============================================================\n");
-    printk("                 N I N U X   K E R N E L                  \n");
+    printk("                 Ninux Kernel Version - %d                  \n", -234);
     printk("============================================================\n");
     printk("\n");
 
-    printk("[BOOT] Power-on sequence initiated\n");
-    printk("[BOOT] Entering kernel execution environment\n");
-    printk("[BOOT] UEFI handoff accepted\n");
-    printk("\n");
+    printk("Testing printk machinery...\n");
 
-    printk("[INIT] Initializing framebuffer ................. OK\n");
-    printk("[INIT] Initializing text console ................ OK\n");
-    printk("[INIT] Initializing kernel console .............. OK\n");
-    printk("[INIT] Initializing printk subsystem ............ OK\n");
-    printk("\n");
+    printk("signed:   %d\n", -123456);
+    printk("unsigned: %u\n", 123456U);
+    printk("char:     %c\n", 'X');
+    printk("string:   %s\n", "NINUX");
+    printk("percent:  100%%\n");
 
-    printk("[ OK ] Kernel console online\n");
-    printk("[ OK ] Terminal output online\n");
-    printk("[ OK ] Kernel logging online\n");
     printk("\n");
+    printk("Mixed: %s %d %u %c %%\n",
+        "Ninux",
+        -42,
+        42U,
+        '!');
 
-    printk("------------------------------------------------------------\n");
-    printk("                 NINUX STRATEGIC COMMAND                    \n");
-    printk("                    TERMINAL v0.1                           \n");
-    printk("------------------------------------------------------------\n");
-    printk("\n");
-
-    printk("STATUS: SYSTEM ONLINE\n");
-    printk("STATUS: ALL CORE SYSTEMS NOMINAL\n");
-    printk("\n");
-
-    printk("ninux> ");
-    
     while (1) {
         __asm__ volatile("hlt");
     }

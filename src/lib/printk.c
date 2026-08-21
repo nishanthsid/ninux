@@ -7,6 +7,11 @@ console *printk_console;
 char pk_buff[PK_BUFF_SIZE + 1];
 uint32_t index = 0;
 
+typedef enum{
+    NORMAL,
+    FORMAT_CHECK,
+} pkparser_context;
+
 void init_printk(){
     printk_console = get_kernel_console();
     for(uint32_t i = 0;i < PK_BUFF_SIZE;i++){
@@ -39,8 +44,113 @@ static inline void push_str(const char * str){
     }
 }
 
+
+static void handle_uint(va_list *args){
+    uint32_t v = va_arg(*args, uint32_t);
+    char arr[32];
+    for(uint32_t i = 0; i < 32;i++) arr[i] = 0;
+    uint32_t ind = 0;
+    while(v > 0){
+        arr[ind] = '0' + v % 10;
+        v /= 10;
+        ind++;
+    }
+    ind--;
+    uint32_t indl = 0;
+    while(indl < ind){
+        char c = arr[indl];
+        arr[indl] = arr[ind];
+        arr[ind] = c;
+        indl++;
+        ind--;
+    }
+    push_str(arr);
+}
+
+static void handle_int(va_list *args){
+    int32_t v = va_arg(*args, int32_t);
+    int32_t is_neg = 0;
+    if(v < 0){
+        is_neg = 1;
+        v *= -1;
+    }
+    char arr[32];
+    for(uint32_t i = 0; i < 32;i++) arr[i] = 0;
+    uint32_t ind = 0;
+    while(v > 0){
+        arr[ind] = '0' + v % 10;
+        v /= 10;
+        ind++;
+    }
+    ind--;
+    uint32_t indl = 0;
+    while(indl < ind){
+        char c = arr[indl];
+        arr[indl] = arr[ind];
+        arr[ind] = c;
+        indl++;
+        ind--;
+    }
+    if(is_neg == 1){
+        push_char('-');
+    }
+    push_str(arr);
+
+}
+
+
+static void printk_helper(const char* fmt, va_list *args){
+    uint32_t index = 0;
+    pkparser_context cntx = NORMAL;
+    while(fmt[index] != 0){
+        char c = fmt[index];
+        switch(cntx){
+            case NORMAL:{
+                if(c == '%'){
+                    cntx = FORMAT_CHECK;
+                }
+                else{
+                    push_char(c);
+                }
+                break;
+            }
+            case FORMAT_CHECK:{
+                switch(c){
+                    case '%': {
+                        push_char(c);
+                        break;
+                    }
+                    case 'd':{
+                        handle_int(args);
+                        break;
+                    }
+                    case 'c':{
+                        char c = va_arg(*args, int32_t);
+                        push_char(c);
+                        break;
+                    }
+                    case 's':{
+                        char * str = va_arg(*args, char *);
+                        push_str(str);
+                        break;
+                    }
+                    case 'u':{
+                        handle_uint(args);
+                        break;
+                    }
+                    
+                }
+                cntx = NORMAL;
+            }
+        }
+        index++;
+    }
+}
+
 void printk(const char * fmt, ...){
-    // Testing just for simple string cases
-    push_str(fmt);
+    va_list args;
+    va_start(args, fmt);
+    printk_helper(fmt, &args);
     flush_printk();
+    va_end(args);
 }
