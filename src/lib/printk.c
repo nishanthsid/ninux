@@ -47,6 +47,10 @@ static inline void push_str(const char * str){
 
 static void handle_uint(va_list *args){
     uint32_t v = va_arg(*args, uint32_t);
+    if (v == 0) {
+        push_char('0');
+        return;
+    }
     char arr[32];
     for(uint32_t i = 0; i < 32;i++) arr[i] = 0;
     uint32_t ind = 0;
@@ -69,6 +73,10 @@ static void handle_uint(va_list *args){
 
 static void handle_int(va_list *args){
     int32_t v = va_arg(*args, int32_t);
+    if (v == 0) {
+        push_char('0');
+        return;
+    }
     int32_t is_neg = 0;
     if(v < 0){
         is_neg = 1;
@@ -96,6 +104,37 @@ static void handle_int(va_list *args){
     }
     push_str(arr);
 
+}
+
+static void handle_hex(va_list *args, uint8_t is_upper){
+    uint32_t v = va_arg(*args, uint32_t);
+    if (v == 0) {
+        push_str("0x0");
+        return;
+    }
+    char arr[32];
+    for(uint32_t i = 0; i < 32;i++) arr[i] = 0;
+    uint32_t ind = 0;
+    while(v > 0){
+        char curr = 0;
+        int dig = v % 16;
+        if(dig <= 9) curr = '0' + dig;
+        else curr = ((is_upper == 1)?'A':'a') + dig - 10;
+        arr[ind] = curr;
+        v /= 16;
+        ind++;
+    }
+    ind--;
+    uint32_t indl = 0;
+    while(indl < ind){
+        char c = arr[indl];
+        arr[indl] = arr[ind];
+        arr[ind] = c;
+        indl++;
+        ind--;
+    }
+    push_str("0x");
+    push_str(arr);
 }
 
 
@@ -138,6 +177,15 @@ static void printk_helper(const char* fmt, va_list *args){
                         handle_uint(args);
                         break;
                     }
+                    case 'x':{
+                        handle_hex(args, 0);
+                        break;
+                    }
+                    case 'X':{
+                        handle_hex(args, 1);
+                        break;
+                    }
+
                     
                 }
                 cntx = NORMAL;

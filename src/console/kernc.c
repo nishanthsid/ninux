@@ -12,13 +12,13 @@ void kernc_init(){
         console_cells,
         TB_MAX_ROWS,
         TB_MAX_COLS,
-        WHITE,
+        GREEN,
         BLACK
     );
     console_init(
         &cns,
         &tb,
-        WHITE,
+        GREEN,
         BLACK
     );
     console_clear(&cns);

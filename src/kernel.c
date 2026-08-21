@@ -14,25 +14,26 @@ void kernel_main(boot_info *bt_info)
     init_printk();
 
     printk("\n");
-    printk("============================================================\n");
-    printk("                 Ninux Kernel Version - %d                  \n", -234);
-    printk("============================================================\n");
-    printk("\n");
+printk("================ PRINTK STRESS ================\n");
 
-    printk("Testing printk machinery...\n");
+printk("d: %d %d %d\n", 0, 42, -42);
+printk("u: %u %u\n", 0U, 4294967295U);
+printk("c: %c %c %c %c\n", 'A', 'Z', '!', '?');
+printk("s: %s | %s\n", "NINUX", "KERNEL");
+printk("x: %x %x %x\n", 0U, 0xDEADBEEFU, 0xFFFFFFFFU);
+printk("X: %X %X %X\n", 0U, 0xDEADBEEFU, 0xFFFFFFFFU);
+printk("%%: 100%% complete\n");
 
-    printk("signed:   %d\n", -123456);
-    printk("unsigned: %u\n", 123456U);
-    printk("char:     %c\n", 'X');
-    printk("string:   %s\n", "NINUX");
-    printk("percent:  100%%\n");
+printk("\nMixed:\n");
+printk("%s %d %u %x %X %c %%\n",
+       "Ninux", -12345, 12345U,
+       0xCAFEBABEU, 0xDEADBEEFU, 'X');
 
-    printk("\n");
-    printk("Mixed: %s %d %u %c %%\n",
-        "Ninux",
-        -42,
-        42U,
-        '!');
+printk("\nBuffer: ");
+for (uint32_t i = 0; i < 20; i++)
+    printk("%u ", i);
+
+printk("\n==================== DONE ====================\n");
 
     while (1) {
         __asm__ volatile("hlt");
