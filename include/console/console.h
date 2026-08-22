@@ -13,6 +13,10 @@ typedef struct {
     uint32_t scroll_offset;
     color24 default_fg;
     color24 default_bg;
+    uint8_t override_fg;
+    uint8_t override_bg;
+    color24 current_fg;
+    color24 current_bg;
 } console;
 
 void fb_console_init();
@@ -32,5 +36,9 @@ void console_clear(console *cns);
 void console_fill(console *cns, char c);
 void console_fill_color(console *cns, char c, color24 fg, color24 bg);
 
+void console_set_fg(console *cns, color24 fg);
+void console_set_bg(console *cns, color24 bg);
+
+void console_reset_colors(console *cns);
 
 #endif

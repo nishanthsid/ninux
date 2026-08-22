@@ -195,6 +195,21 @@ static void printk_helper(const char* fmt, va_list *args){
     }
 }
 
+void printk_setfg(color24 fg){
+    flush_printk();
+    console_set_fg(printk_console, fg);
+}
+void printk_setbg(color24 bg){
+    flush_printk();
+    console_set_bg(printk_console, bg);
+}
+
+void printk_reset_colors(){
+    flush_printk();
+    console_reset_colors(printk_console);
+}
+
+
 void printk(const char * fmt, ...){
     va_list args;
     va_start(args, fmt);
