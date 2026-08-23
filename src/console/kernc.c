@@ -12,14 +12,14 @@ void kernc_init(){
         console_cells,
         TB_MAX_ROWS,
         TB_MAX_COLS,
-        GREEN,
-        BLACK
+        DEFAULT_FG,
+        DEFAULT_BG
     );
     console_init(
         &cns,
         &tb,
-        GREEN,
-        BLACK
+        DEFAULT_FG,
+        DEFAULT_BG
     );
     console_clear(&cns);
 }
