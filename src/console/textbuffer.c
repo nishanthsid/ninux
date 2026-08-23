@@ -1,4 +1,4 @@
-#include <video/textbuffer.h>
+#include <console/textbuffer.h>
 #include <video/color.h>
 
 static inline cell get_cell(char c, color24 fg, color24 bg){

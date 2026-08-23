@@ -5,7 +5,7 @@
 #include <boot.h>
 #include <video/color.h>
 
-void framebuffer_init(BootInfo * boot_info);
+void framebuffer_init(boot_info * bt_info);
 
 uint32_t fb_get_width(void);
 uint32_t fb_get_height(void);

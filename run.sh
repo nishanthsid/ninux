@@ -70,7 +70,7 @@ gcc \
 -mno-red-zone \
 -Wall \
 -Wextra \
-kernel/kernel.c \
+src/kernel.c \
 -o build/kernel/kernel.o
 
 # Video
@@ -82,7 +82,7 @@ gcc \
 -mno-red-zone \
 -Wall \
 -Wextra \
-kernel/video/framebuffer.c \
+src/video/framebuffer.c \
 -o build/kernel/video/framebuffer.o
 
 gcc \
@@ -92,7 +92,7 @@ gcc \
 -mno-red-zone \
 -Wall \
 -Wextra \
-kernel/video/console.c \
+src/console/console.c \
 -o build/kernel/video/console.o
 
 gcc \
@@ -102,7 +102,7 @@ gcc \
 -mno-red-zone \
 -Wall \
 -Wextra \
-kernel/video/textbuffer.c \
+src/console/textbuffer.c \
 -o build/kernel/video/textbuffer.o
 
 gcc \
@@ -112,7 +112,7 @@ gcc \
 -mno-red-zone \
 -Wall \
 -Wextra \
-kernel/video/color.c \
+src/video/color.c \
 -o build/kernel/video/color.o
 
 gcc \
@@ -122,8 +122,32 @@ gcc \
 -mno-red-zone \
 -Wall \
 -Wextra \
-kernel/video/fonts8x16.c \
+src/video/fonts8x16.c \
 -o build/kernel/video/fonts8x16.o
+
+# Kernal Console
+
+gcc \
+-c \
+-Iinclude \
+-ffreestanding \
+-mno-red-zone \
+-Wall \
+-Wextra \
+src/console/kernc.c \
+-o build/kernel/video/kernc.o
+
+# Kernal Console
+
+gcc \
+-c \
+-Iinclude \
+-ffreestanding \
+-mno-red-zone \
+-Wall \
+-Wextra \
+src/lib/printk.c \
+-o build/kernel/lib/printk.o
 
 # Library
 
@@ -134,13 +158,13 @@ gcc \
 -mno-red-zone \
 -Wall \
 -Wextra \
-kernel/lib/memshift.c \
+src/lib/memshift.c \
 -o build/kernel/lib/memshift.o
 
 echo "Linking kernel..."
 
 ld \
--T kernel/linker.ld \
+-T src/linker.ld \
 -o build/kernel.elf \
 build/kernel/kernel.o \
 build/kernel/video/framebuffer.o \
@@ -148,7 +172,9 @@ build/kernel/video/console.o \
 build/kernel/video/textbuffer.o \
 build/kernel/video/color.o \
 build/kernel/video/fonts8x16.o \
-build/kernel/lib/memshift.o
+build/kernel/lib/memshift.o \
+build/kernel/video/kernc.o \
+build/kernel/lib/printk.o
 
 cp build/kernel.elf esp/EFI/BOOT/kernel.elf
 

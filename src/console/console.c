@@ -1,14 +1,14 @@
-#include <video/console.h>
+#include <console/console.h>
 #include <video/framebuffer.h>
 #include <video/fonts8x16.h>
 #include <video/color.h>
 #include <lib/memshift.h>
-#include <video/textbuffer.h>
+#include <console/textbuffer.h>
 
 static uint32_t LINE_WIDTH = 0;
 static uint32_t LINE_HEIGHT = 0;
 
-void console_sys_init(){
+void fb_console_init(){
     uint32_t height = fb_get_height();
     uint32_t width = fb_get_width();
 
@@ -21,6 +21,9 @@ void console_init(console *cns, text_buffer *tb, color24 fg, color24 bg){
     cns->cursor_x = 0;
     cns->cursor_y = 0;
     cns->scroll_offset = 0;
+    cns->override_bg = cns->override_fg = 0;
+    cns->current_bg = bg;
+    cns->current_fg = fg;
     cns->default_bg = bg;
     cns->default_fg = fg;
 }
@@ -112,9 +115,19 @@ static void put_char_helper(console *cns, char c, color24 fg, color24 bg){
     }
 }
 
+static inline color24 get_fg(console *cns){
+    if(cns->override_fg == 1) return cns->current_fg;
+    return cns->default_fg;
+}
+
+static inline color24 get_bg(console *cns){
+    if(cns->override_bg == 1) return cns->current_bg;
+    return cns->default_bg;
+}
+
 
 void console_put_char(console *cns, char c){
-    put_char_helper(cns, c, cns->default_fg, cns->default_bg);
+    put_char_helper(cns, c, get_fg(cns), get_bg(cns));
 }
 
 void console_put_char_color(console *cns, char c, color24 fg, color24 bg){
@@ -130,7 +143,7 @@ void console_put_string_color(console *cns, const char * string, color24 fg, col
 }
 
 void console_put_string(console *cns, const char * string){
-    console_put_string_color(cns, string, cns->default_fg, cns->default_bg);
+    console_put_string_color(cns, string, get_fg(cns), get_bg(cns));
 }
 
 void console_scroll_to(console *cns, uint32_t row){
@@ -147,7 +160,7 @@ void console_fill_color(console *cns, char c, color24 fg, color24 bg){
 }
 
 void console_fill(console *cns, char c){
-    console_fill_color(cns, c, cns->default_fg, cns->default_bg);
+    console_fill_color(cns, c, get_fg(cns), get_bg(cns));
 }
 
 void console_clear(console *cns){
@@ -155,5 +168,15 @@ void console_clear(console *cns){
 }
 
 
+void console_set_fg(console *cns, color24 fg){
+    cns->override_fg = 1;
+    cns->current_fg = fg;
+}
+void console_set_bg(console *cns, color24 bg){
+    cns->override_bg = 1;
+    cns->current_bg = bg;
+}
 
-
+void console_reset_colors(console *cns){
+    cns->override_bg = cns->override_fg = 0;
+}

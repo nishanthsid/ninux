@@ -4,7 +4,7 @@
 #include <config.h>
 #include <boot.h>
 
-typedef void (*KernelEntry)(BootInfo *);
+typedef void (*KernelEntry)(boot_info *);
 
 EFI_STATUS Status; //The global Status pointer that gets the status for all UEFI operations
 EFI_LOADED_IMAGE *LoadedImage; //This stores the device info from which this program loaded
@@ -14,7 +14,7 @@ EFI_FILE_PROTOCOL *KernelFile; //This is the protocol handle for our actual kern
 Elf64_Ehdr KernelHeader; 
 Elf64_Phdr *ProgramHeaders;
 BOOLEAN IsDebug = FALSE;
-BootInfo Boot;
+boot_info Boot;
 EFI_MEMORY_DESCRIPTOR *MemoryMap = NULL;
 UINTN MemoryMapSize = 0;
 UINTN MapKey;
@@ -307,7 +307,7 @@ EFI_STATUS load_program_segments(){
     return EFI_SUCCESS;
 }
 
-EFI_STATUS initialize_boot_info(BootInfo *Boot){
+EFI_STATUS initialize_boot_info(boot_info *Boot){
     EFI_GRAPHICS_OUTPUT_PROTOCOL * Gop;
 
     //Locate the GOP, same as what we did to locate the device from this file was executed

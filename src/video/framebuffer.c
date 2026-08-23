@@ -10,12 +10,12 @@ static uint32_t HEIGHT = 0;
 static uint32_t PIXEL_PER_SCAN_LINE = 0;
 static uintptr_t FRAME_BUFFER_SIZE = 0;
 
-void framebuffer_init(BootInfo *boot_info){
-    FB_BASE = boot_info->FramebufferBase;
-    WIDTH = boot_info->Width;
-    HEIGHT = boot_info->Height;
-    PIXEL_PER_SCAN_LINE = boot_info->PixelsPerScanLine;
-    FRAME_BUFFER_SIZE = boot_info->FramebufferSize;
+void framebuffer_init(boot_info *bt_info){
+    FB_BASE = bt_info->FramebufferBase;
+    WIDTH = bt_info->Width;
+    HEIGHT = bt_info->Height;
+    PIXEL_PER_SCAN_LINE = bt_info->PixelsPerScanLine;
+    FRAME_BUFFER_SIZE = bt_info->FramebufferSize;
 }
 
 uint32_t fb_get_height(){
