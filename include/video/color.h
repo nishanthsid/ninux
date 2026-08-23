@@ -42,4 +42,7 @@ color24 color_rgb(uint8_t, uint8_t, uint8_t);
 #define MAROON       ((color24){128,   0,   0})
 #define SILVER       ((color24){192, 192, 192})
 
+#define DEFAULT_FG   ((color24){  0, 255,   0})
+#define DEFAULT_BG   ((color24){  0, 0,   0})
+
 #endif

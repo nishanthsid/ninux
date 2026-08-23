@@ -10,6 +10,9 @@ uint32_t index = 0;
 typedef enum{
     NORMAL,
     FORMAT_CHECK,
+    ESCAPE,
+    ANSI_CSI,
+    ANSI_PARAM
 } pkparser_context;
 
 void init_printk(){
@@ -138,9 +141,90 @@ static void handle_hex(va_list *args, uint8_t is_upper){
 }
 
 
+static void apply_ansi_param(uint32_t param){
+    switch(param) {
+        case 0:
+            printk_reset_colors();
+            break;
+
+        case 30:
+            printk_setfg(BLACK);
+            break;
+
+        case 31:
+            printk_setfg(RED);
+            break;
+
+        case 32:
+            printk_setfg(GREEN);
+            break;
+
+        case 33:
+            printk_setfg(YELLOW);
+            break;
+
+        case 34:
+            printk_setfg(BLUE);
+            break;
+
+        case 35:
+            printk_setfg(MAGENTA);
+            break;
+
+        case 36:
+            printk_setfg(CYAN);
+            break;
+
+        case 37:
+            printk_setfg(WHITE);
+            break;
+
+        case 39:
+            printk_setfg(DEFAULT_FG);
+            break;
+
+        case 40:
+            printk_setbg(BLACK);
+            break;
+
+        case 41:
+            printk_setbg(RED);
+            break;
+
+        case 42:
+            printk_setbg(GREEN);
+            break;
+
+        case 43:
+            printk_setbg(YELLOW);
+            break;
+
+        case 44:
+            printk_setbg(BLUE);
+            break;
+
+        case 45:
+            printk_setbg(MAGENTA);
+            break;
+
+        case 46:
+            printk_setbg(CYAN);
+            break;
+
+        case 47:
+            printk_setbg(WHITE);
+            break;
+
+        case 49:
+            printk_setbg(DEFAULT_BG);
+            break;
+    }
+}
+
 static void printk_helper(const char* fmt, va_list *args){
     uint32_t index = 0;
     pkparser_context cntx = NORMAL;
+    uint32_t ansi_param = 0;
     while(fmt[index] != 0){
         char c = fmt[index];
         switch(cntx){
@@ -148,8 +232,51 @@ static void printk_helper(const char* fmt, va_list *args){
                 if(c == '%'){
                     cntx = FORMAT_CHECK;
                 }
+                else if(c == '\033'){
+                    ansi_param = 0;
+                    cntx = ESCAPE;
+                }
                 else{
                     push_char(c);
+                }
+                break;
+            }
+            case ESCAPE:{
+                if(c == '['){
+                    cntx = ANSI_CSI;
+                }
+                else{
+                    cntx = NORMAL;
+                }
+                break;
+            }
+            case ANSI_CSI:{
+                if(c >= '0' && c <= '9'){
+                    ansi_param *= 10;
+                    ansi_param += c - '0';
+                    cntx = ANSI_PARAM;
+                }
+                else if(c == 'm'){
+                    ansi_param = 0;
+                    apply_ansi_param(ansi_param);
+                    cntx = NORMAL;
+                }
+                else{
+                    cntx = NORMAL;
+                }
+                break;
+            }
+            case ANSI_PARAM:{
+                if(c >= '0' && c <= '9'){
+                    ansi_param *= 10;
+                    ansi_param += c - '0';
+                }
+                else if(c == 'm'){
+                    apply_ansi_param(ansi_param);
+                    cntx = NORMAL;
+                }
+                else{
+                    cntx = NORMAL;
                 }
                 break;
             }
