@@ -4,7 +4,7 @@
 // Taking longer than expected to understand gdt
 // I am feeling a bit tired today
 // Same today ...............................................................................................
-// Wtf is happening to me :)
+// Wtf is happening to me :)...
 void set_gdt(){
     
 }
